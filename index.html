@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnerLens — Mood Journal with AI Insights</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <i class="ph ph-brain"></i>
+            <span class="brand-text">InnerLens</span>
+            <span class="brand-version">v1.0</span>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-btn" id="nav-journal" title="Journal"><i class="ph ph-notebook"></i></button>
+            <button class="nav-btn" id="nav-insights" title="Insights"><i class="ph ph-chart-line-up"></i></button>
+            <button class="nav-btn" id="nav-patterns" title="Patterns"><i class="ph ph-graph"></i></button>
+            <button class="nav-btn" id="nav-history" title="History"><i class="ph ph-clock-counter-clockwise"></i></button>
+            <div class="nav-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Ollama</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero" id="hero">
+        <div class="hero-grid"></div>
+        <div class="hero-content">
+            <div class="hero-terminal">
+                <div class="terminal-bar">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">innerlens — reflect</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-line">
+                        <span class="prompt">$</span>
+                        <span class="typed-text" id="typed-text"></span>
+                        <span class="cursor">_</span>
+                    </div>
+                </div>
+            </div>
+            <h1 class="hero-title">
+                <span class="title-line">Know your</span>
+                <span class="title-line accent">Inner World</span>
+            </h1>
+            <p class="hero-subtitle">A private AI journal that helps you understand your emotions, spot patterns in your habits, and unlock what drives your days.</p>
+            <div class="hero-stats">
+                <div class="stat"><i class="ph ph-lock stat-icon"></i><span class="stat-label">Private</span></div>
+                <div class="stat"><i class="ph ph-brain stat-icon"></i><span class="stat-label">AI Insights</span></div>
+                <div class="stat"><i class="ph ph-chart-line-up stat-icon"></i><span class="stat-label">Patterns</span></div>
+            </div>
+            <button class="hero-cta" id="start-btn">
+                <i class="ph ph-pencil-simple"></i>
+                <span>Start Journaling</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main App -->
+    <main class="app-container" id="app-container">
+
+        <!-- Journal Entry Section -->
+        <section class="section journal-section" id="journal-section">
+            <div class="section-header">
+                <span class="section-number">01</span>
+                <h2 class="section-title">How are you feeling?</h2>
+                <span class="section-date" id="section-date"></span>
+            </div>
+
+            <!-- Mood Selector -->
+            <div class="mood-selector">
+                <label class="input-label"><i class="ph ph-smiley"></i> Mood</label>
+                <div class="mood-faces" id="mood-faces">
+                    <button class="mood-face" data-mood="1" data-label="Awful" title="Awful">😞</button>
+                    <button class="mood-face" data-mood="2" data-label="Bad" title="Bad">😔</button>
+                    <button class="mood-face" data-mood="3" data-label="Meh" title="Meh">😐</button>
+                    <button class="mood-face" data-mood="4" data-label="Good" title="Good">🙂</button>
+                    <button class="mood-face" data-mood="5" data-label="Great" title="Great">😊</button>
+                </div>
+                <span class="mood-label" id="mood-label"></span>
+            </div>
+
+            <!-- Energy Level -->
+            <div class="input-group">
+                <label class="input-label"><i class="ph ph-battery-charging"></i> Energy Level</label>
+                <div class="slider-wrap">
+                    <input type="range" id="energy-slider" min="1" max="5" value="3" class="slider">
+                    <div class="slider-labels">
+                        <span>Drained</span><span>Low</span><span>Neutral</span><span>Energized</span><span>Wired</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emotions Tags -->
+            <div class="input-group">
+                <label class="input-label"><i class="ph ph-heart"></i> Emotions (select all that apply)</label>
+                <div class="chip-group" id="emotion-chips">
+                    <button class="chip" data-value="anxious">Anxious</button>
+                    <button class="chip" data-value="calm">Calm</button>
+                    <button class="chip" data-value="grateful">Grateful</button>
+                    <button class="chip" data-value="frustrated">Frustrated</button>
+                    <button class="chip" data-value="hopeful">Hopeful</button>
+                    <button class="chip" data-value="lonely">Lonely</button>
+                    <button class="chip" data-value="motivated">Motivated</button>
+                    <button class="chip" data-value="overwhelmed">Overwhelmed</button>
+                    <button class="chip" data-value="peaceful">Peaceful</button>
+                    <button class="chip" data-value="sad">Sad</button>
+                    <button class="chip" data-value="angry">Angry</button>
+                    <button class="chip" data-value="joyful">Joyful</button>
+                    <button class="chip" data-value="numb">Numb</button>
+                    <button class="chip" data-value="confident">Confident</button>
+                    <button class="chip" data-value="insecure">Insecure</button>
+                </div>
+            </div>
+
+            <!-- Activities / Context -->
+            <div class="input-group">
+                <label class="input-label"><i class="ph ph-list-checks"></i> What did you do today?</label>
+                <div class="chip-group" id="activity-chips">
+                    <button class="chip" data-value="exercise">Exercise</button>
+                    <button class="chip" data-value="work">Work</button>
+                    <button class="chip" data-value="socializing">Socializing</button>
+                    <button class="chip" data-value="nature">Nature</button>
+                    <button class="chip" data-value="reading">Reading</button>
+                    <button class="chip" data-value="screen-time">Screen time</button>
+                    <button class="chip" data-value="cooking">Cooking</button>
+                    <button class="chip" data-value="meditation">Meditation</button>
+                    <button class="chip" data-value="poor-sleep">Poor sleep</button>
+                    <button class="chip" data-value="good-sleep">Good sleep</button>
+                    <button class="chip" data-value="alcohol">Alcohol</button>
+                    <button class="chip" data-value="caffeine">Caffeine</button>
+                    <button class="chip" data-value="creative-work">Creative work</button>
+                    <button class="chip" data-value="conflict">Conflict</button>
+                    <button class="chip" data-value="helping-others">Helping others</button>
+                </div>
+            </div>
+
+            <!-- Free-form journal -->
+            <div class="input-group">
+                <label class="input-label"><i class="ph ph-pencil-simple"></i> What's on your mind?</label>
+                <textarea id="journal-text" class="text-input journal-textarea" placeholder="Write freely — what happened, how it made you feel, what you're thinking about..."></textarea>
+            </div>
+
+            <!-- Sleep & Habits -->
+            <div class="input-row">
+                <div class="input-group">
+                    <label class="input-label"><i class="ph ph-moon"></i> Hours of sleep</label>
+                    <input type="number" id="sleep-hours" class="text-input" min="0" max="14" step="0.5" placeholder="7.5">
+                </div>
+                <div class="input-group">
+                    <label class="input-label"><i class="ph ph-drop"></i> Water (glasses)</label>
+                    <input type="number" id="water-glasses" class="text-input" min="0" max="20" placeholder="8">
+                </div>
+            </div>
+
+            <button class="generate-btn" id="save-entry-btn">
+                <i class="ph ph-floppy-disk"></i>
+                <span>Save & Get Insights</span>
+            </button>
+        </section>
+
+        <!-- AI Insights Section -->
+        <section class="section insights-section" id="insights-section">
+            <div class="section-header">
+                <span class="section-number">02</span>
+                <h2 class="section-title">AI Insights</h2>
+                <button class="back-btn" id="insights-back"><i class="ph ph-arrow-left"></i> Back</button>
+            </div>
+            <div class="loading-state" id="insights-loading">
+                <div class="loading-dots"><span></span><span></span><span></span></div>
+                <p class="loading-text">Reflecting on your entry...</p>
+            </div>
+            <div class="insights-content" id="insights-content"></div>
+        </section>
+
+        <!-- Patterns Section -->
+        <section class="section patterns-section" id="patterns-section">
+            <div class="section-header">
+                <span class="section-number"><i class="ph ph-graph"></i></span>
+                <h2 class="section-title">Patterns & Trends</h2>
+                <button class="back-btn" id="patterns-back"><i class="ph ph-arrow-left"></i> Back</button>
+            </div>
+            <div class="loading-state" id="patterns-loading">
+                <div class="loading-dots"><span></span><span></span><span></span></div>
+                <p class="loading-text">Analyzing your patterns...</p>
+            </div>
+            <div class="patterns-content" id="patterns-content"></div>
+        </section>
+
+        <!-- History Section -->
+        <section class="section history-section" id="history-section">
+            <div class="section-header">
+                <span class="section-number"><i class="ph ph-clock-counter-clockwise"></i></span>
+                <h2 class="section-title">Journal History</h2>
+                <button class="back-btn" id="history-back"><i class="ph ph-arrow-left"></i> Back</button>
+            </div>
+            <div class="history-grid" id="history-grid"></div>
+        </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title-group"><i class="ph ph-gear modal-icon"></i><h2 class="modal-title">Settings</h2></div>
+                <button class="modal-close" id="settings-close"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item"><label class="input-label">Ollama URL</label><input type="text" id="ollama-url" class="text-input" value="http://localhost:11434"></div>
+                <div class="setting-item"><label class="input-label">Model</label><input type="text" id="ollama-model" class="text-input" value="mistral"></div>
+                <button class="generate-btn" id="save-settings" style="margin-top:16px;"><i class="ph ph-floppy-disk"></i><span>Save</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
