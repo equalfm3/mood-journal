@@ -45,13 +45,19 @@ This isn't a notes app with a mood picker. InnerLens uses local AI to:
 ## Quick Start
 
 ```bash
-# 1. Make sure Ollama is running
+# 1. Install Ollama (if not already)
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# 2. Pull a model
+ollama pull mistral
+
+# 3. Make sure Ollama is running
 ollama serve
 
-# 2. Serve the app
+# 4. Serve the app
 python3 -m http.server 8080
 
-# 3. Open
+# 5. Open
 open http://localhost:8080
 ```
 
