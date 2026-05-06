@@ -6,6 +6,10 @@
 
 A private journal that goes beyond logging. It helps you see emotional patterns, understand what drives your days, and unlock self-awareness through AI-powered reflection.
 
+<br/>
+
+<img src="assets/preview.png" alt="InnerLens interface" width="100%"/>
+
 </div>
 
 ---
